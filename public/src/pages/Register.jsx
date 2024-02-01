@@ -1,16 +1,54 @@
 import { Link } from "react-router-dom"
 import Logo from "../assets/logo.png"
 import styled from "styled-components"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from "axios"
+import { registerRoute } from "../utils/APIRoutes";
 
 const Register = () => {
-    const handleSubmit = (e) => {
+    const toastOptions =  {
+        position: "top-right",
+        autoClose: 10000,
+        pauseOnHover: true,
+        draggable: true
+      }
+    const validateForm = (data) => {
+        if (data.get("password") !== data.get("confPassword")){
+            // show Error 
+            toast.error("Password and Confirmed Password are not same. !",toastOptions);
+            return false
+        }
+        else if (data.get("username").length < 3){
+            // show Error 
+            toast.error("Username must be greater than 3 chars!", toastOptions);
+            return false
+        }
+        else if (data.get("password").length < 3){
+            // show Error 
+            toast.error("Password must be greater then 3 chars !", toastOptions);
+            return false
+        }
+        else if (data.get("email").length === 0){
+            // show Error 
+            toast.error("Email is mandatory", toastOptions);
+            return false
+        }
+        return true
+    }
+    const handleSubmit = async(e) => {
         e.preventDefault()
-        alert("form")
+        const formData = new FormData(e.target)
+        console.log(Object.fromEntries(formData))
+        if (validateForm(formData)){
+            // post data to the backend
+            const reqBody = Object.fromEntries(formData)
+            const {resp} = await axios.post(registerRoute, reqBody)
+        }
+        
     } 
 
-    const handleChange = (e) => {
-        alert("change")
-    }
+
     return ( <>
     
     <FormContainer>
@@ -19,14 +57,15 @@ const Register = () => {
                 <img src={Logo} alt="brand_image"  height={100}/>
                 <h1>MERNchat Register Form</h1>
             </div>
-            <input type="text" name="username" placeholder="Username" onChange={handleChange}/>
-            <input type="email" name="email" placeholder="Email" onChange={handleChange}/>
-            <input type="password" name="password" placeholder="Password" onChange={handleChange}/>
-            <input type="password" name="confPassword" placeholder="Confirm Password" onChange={handleChange}/>
+            <input type="text" name="username" placeholder="Username"/>
+            <input type="email" name="email" placeholder="Email" />
+            <input type="password" name="password" placeholder="Password" />
+            <input type="password" name="confPassword" placeholder="Confirm Password" />
             <button type="submit">Register</button>
             <p>If you already have an account, then click here to <b><Link to="/login">Login</Link></b> </p>
         </form>
     </FormContainer>
+    <ToastContainer/>
     </> );
 }
  
