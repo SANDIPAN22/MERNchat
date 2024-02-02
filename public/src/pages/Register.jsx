@@ -1,12 +1,14 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import Logo from "../assets/logo.png"
 import styled from "styled-components"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios"
 import { registerRoute } from "../utils/APIRoutes";
+import { useEffect } from "react";
 
 const Register = () => {
+    const navigate = useNavigate()
     const toastOptions =  {
         position: "top-right",
         autoClose: 10000,
@@ -43,11 +45,25 @@ const Register = () => {
         if (validateForm(formData)){
             // post data to the backend
             const reqBody = Object.fromEntries(formData)
-            const {resp} = await axios.post(registerRoute, reqBody)
+            const {data} = await axios.post(registerRoute, reqBody)
+
+            if (data.status === false){
+                toast.error(data.msg, toastOptions)
+            }
+            if (data.status === true){
+                localStorage.setItem('chat-app-user', JSON.stringify(data.user))
+                navigate("/")
+            }
         }
         
     } 
 
+    // auth check: if userdata is present then no need to render this page, Open Chat page directly
+    useEffect(()=>{
+        if(localStorage.getItem('chat-app-user')){
+            navigate("/")
+        }
+    }, [])
 
     return ( <>
     
