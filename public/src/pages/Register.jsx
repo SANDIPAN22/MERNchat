@@ -52,7 +52,10 @@ const Register = () => {
             }
             if (data.status === true){
                 localStorage.setItem('chat-app-user', JSON.stringify(data.user))
-                navigate("/")
+                toast.success("Your profile has been successfully registered .", toastOptions)
+                setTimeout(()=>{
+                    navigate("/setAvatar")
+                }, 5000)
             }
         }
         

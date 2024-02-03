@@ -44,7 +44,10 @@ const Login = () => {
             }
             if (data.status === true){
                 localStorage.setItem('chat-app-user', JSON.stringify(data.user))
-                navigate("/")
+                toast.success("Logging you In...", toastOptions)
+                setTimeout(()=>{
+                    navigate("/chat")
+                }, 5000)
             }
         }
         
