@@ -64,7 +64,7 @@ const Register = () => {
     // auth check: if userdata is present then no need to render this page, Open Chat page directly
     useEffect(()=>{
         if(localStorage.getItem('chat-app-user')){
-            navigate("/")
+            navigate("/chat")
         }
     }, [])
 

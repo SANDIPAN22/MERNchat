@@ -61,3 +61,16 @@ module.exports.setAvatar = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports.getAllFriends = async (req, res, next) => {
+  try {
+    const friends = await User.find({ _id: { $ne: req.params.userId } }).select(
+      ["email", "avatarImage", "username", "_id"]
+    );
+
+    return res.json({ status: true, friends });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};

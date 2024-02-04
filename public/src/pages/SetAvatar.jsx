@@ -1,5 +1,4 @@
 import {  useNavigate } from "react-router-dom"
-import Logo from "../assets/logo.png"
 import styled from "styled-components"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
