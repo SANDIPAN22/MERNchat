@@ -6,9 +6,12 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import Loader from "../components/Loader"
+import Welcome from "../components/Welcome";
+import Chatbox from "../components/Chatbox";
 
 const Chat = () => {
     const navigate = useNavigate()
+    const [selectedContact, setSelectedContact] = useState(undefined)
     const [contacts, setContacts] = useState([])
     const [isLoading, setLoading] = useState(true)
     const [currentUser, setCurrentUser] = useState({})
@@ -47,7 +50,12 @@ const Chat = () => {
     return ( <>
     <Container>
         <div className="container">
-        <Contacts contacts={contacts} currentUser={currentUser}></Contacts>
+            {isLoading ? <Loader/> : <Contacts contacts={contacts} currentUser={currentUser} 
+            setSelectedContact={setSelectedContact}></Contacts>}
+
+            {selectedContact ? <Chatbox selectedContact={selectedContact} currentUser={currentUser}></Chatbox>
+            : <Welcome currentUser={currentUser}></Welcome>}
+            
         </div>
     </Container>
     

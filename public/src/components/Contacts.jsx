@@ -2,20 +2,30 @@ import { useState } from "react";
 import styled from "styled-components"
 import Logo from "../assets/logo.png"
 
-const Contacts = ({contacts, currentUser}) => {
-    const [selectedUser, setSelectedUser] = useState(undefined)
+
+
+const Contacts = ({contacts, currentUser, setSelectedContact}) => {
+    const [selectedUserIndex, setSelectedUserIndex] = useState(undefined)
     
+
+    const changeContact = (ind, contact) => {
+        // change index
+        setSelectedUserIndex(ind)
+        // change contact
+        setSelectedContact(contact)
+    }
+
     return ( <>
     <Container>
         <div className="brand">
             <img src={Logo} alt="Brand Logo" />
-            <h1>MERNchat</h1>
+            <h3>MERNchat</h3>
         </div>
         <div className="contact-list">
           
             {contacts.map((elem, ind)=> {
                 return (
-                <div className="contact-card">
+                <div className={`contact-card ${ind === selectedUserIndex && 'active-card'}`} onClick={()=> {changeContact(ind, elem)}} >
                     <img  src={`data:image/svg+xml;base64,${elem.avatarImage}`} alt="avatar" key={ind} width={50}/>
                     <h2>{elem.username}</h2>
                 </div>
@@ -24,7 +34,7 @@ const Contacts = ({contacts, currentUser}) => {
             
         </div>
         <div className="current-user-placeholder">
-            <img  src={`data:image/svg+xml;base64,${currentUser.avatarImage}`} alt="avatar"  width={50}/>
+            <img  src={`data:image/svg+xml;base64,${currentUser.avatarImage}`} alt="avatar"  width={40}/>
             <h2>{currentUser.username}</h2>
             <button> LogOut</button>
         </div>
@@ -69,7 +79,16 @@ h1{
     border-bottom: 2px solid black;
     flex-direction: row;
     gap: 1 rem;
-
+    transition: 0.5ms ease-in-out;
+}
+.active-card{
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid black;
+    flex-direction: row;
+    gap: 1 rem;
+    background-color: yellowgreen;
 }
 .contact-card h2{
     color: white;
