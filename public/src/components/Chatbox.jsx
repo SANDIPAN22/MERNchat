@@ -1,11 +1,16 @@
 import styled from "styled-components";
 import ChatInput from "./ChatInput";
-import { useEffect, useState } from "react";
+import { useEffect, useState ,useRef} from "react";
 import axios from "axios"
 import {getMessages} from "../utils/APIRoutes"
+import { ImSwitch } from "react-icons/im";
 
-const Chatbox = ({selectedContact, currentUser}) => {
+const Chatbox = ({selectedContact, currentUser, socket}) => {
+    const scrollRef = useRef()
     const [msgs, setMsgs] = useState([])
+    const [latestMsg, setLatestMsg] = useState({})
+    const [arrivalMessage, setArrivalMessage] = useState({})
+    // fresh pull all msgs for the first time when new contacts chat window is opened
     useEffect(()=>{
         (async()=>{
         const {data} = await axios.post(getMessages,{
@@ -17,6 +22,37 @@ const Chatbox = ({selectedContact, currentUser}) => {
         console.log(data)
 
     })()}, [selectedContact])
+
+    // when a new chat is delivered: set it to the display and emit event
+    useEffect(()=>{
+        setMsgs(m => [...m, latestMsg])
+        socket.current.emit("send-msg", {
+            from: currentUser._id,
+            to: selectedContact._id,
+            message: latestMsg.message
+        })
+    }, [latestMsg])
+
+    // Register event listener for msg-receive for the first time
+    useEffect(()=>{
+        if (socket.current){
+            socket.current.on("msg-receive", (msg)=>{
+                setArrivalMessage({fromSelf: false, message: msg})
+            })
+        }
+    }, [])
+
+    // now whenever ArrivalMessage changes
+    useEffect(()=> {
+        arrivalMessage && setMsgs(m => [...m, arrivalMessage])
+        
+    }, [arrivalMessage])
+
+    // scroll setter
+    useEffect(()=>{
+        scrollRef.current?.scrollIntoView({behaviour: "smooth"})
+    }, [msgs])
+
     return ( <>
         <Container>
             <div className="chat-header">
@@ -26,11 +62,12 @@ const Chatbox = ({selectedContact, currentUser}) => {
                         
                     </div>
                     <div className="username"> {selectedContact.username}</div>
+                    <div className="logout-button"> <ImSwitch /> </div>
                 
             </div>
             <div className="chat-window">
-                {msgs.map(elem => {return <>
-                <div className={`text-container-${elem.fromSelf ? 'sended': 'received'}`}>
+                {msgs.map((elem, ind) => {return <>
+                <div className={`text-container-${elem.fromSelf ? 'sended': 'received'}`} key={ind} ref={scrollRef}>
                     <div className={`text-body`}>
                         <h2>{elem.message}</h2>
                         <h4>{elem.fromSelf}</h4>
@@ -39,7 +76,7 @@ const Chatbox = ({selectedContact, currentUser}) => {
                 </div>
                 </>})}
             </div>
-            <ChatInput selectedContact={selectedContact} currentUser={currentUser}/>
+            <ChatInput selectedContact={selectedContact} currentUser={currentUser} setLatestMsg={setLatestMsg}/>
         </Container>
     </> );
 }
@@ -56,7 +93,8 @@ grid-template-rows: 10% 80% 10%;
     border-bottom: 1px solid grey;
 }
 .chat-window{
-    
+    overflow: auto;
+    max-height: 60vh;
     padding: 5px;
 }
 .chat-input{
@@ -103,8 +141,8 @@ grid-template-rows: 10% 80% 10%;
     display: flex;
     gap: 1rem;
     overflow-wrap: anywhere;
-    width: 328px;
-    background-color: azure;
+    max-width: 328px;
+    background-color: #e2b8f5;
     margin: 10px;
     border-radius: 30px;
     padding: 5px 19px;
@@ -112,5 +150,9 @@ grid-template-rows: 10% 80% 10%;
     align-items: center;
 }
 
-
+.logout-button{
+    margin-left: 1.5rem;
+    font-size: xx-large;
+    color: #ff00009c;
+}
 `

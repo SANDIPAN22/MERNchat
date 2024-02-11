@@ -1,15 +1,17 @@
 import styled from "styled-components"
 import Contacts from "../components/Contacts";
 import axios from "axios"
-import { getAllFriends } from "../utils/APIRoutes";
+import { getAllFriends, host } from "../utils/APIRoutes";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import Loader from "../components/Loader"
 import Welcome from "../components/Welcome";
 import Chatbox from "../components/Chatbox";
+import {io} from "socket.io-client"
 
 const Chat = () => {
+    const socket = useRef()
     const navigate = useNavigate()
     const [selectedContact, setSelectedContact] = useState(undefined)
     const [contacts, setContacts] = useState([])
@@ -21,15 +23,18 @@ const Chat = () => {
         pauseOnHover: true,
         draggable: true
       }
+
     useEffect(()=>{
-        // check whether logged in or not
-        if(!localStorage.getItem('chat-app-user')){
-            navigate("/login")
-        }
+       
         
         // call all friends
         (async()=>{
             const user = await JSON.parse( localStorage.getItem('chat-app-user'))
+             // check whether logged in or not
+            if(!user){
+                navigate("/login")
+                return
+            }
             // check whether the user's avatar is set or not
             if(!user.isAvatarSet){
                 navigate("/setAvatar")
@@ -47,13 +52,25 @@ const Chat = () => {
         })()
     }, [])
 
+    useEffect(()=>{
+        if(currentUser){
+            socket.current = io(host)
+            socket.current.emit("add-user", currentUser._id)
+        }
+    }, [currentUser])
+   
+
     return ( <>
     <Container>
         <div className="container">
             {isLoading ? <Loader/> : <Contacts contacts={contacts} currentUser={currentUser} 
             setSelectedContact={setSelectedContact}></Contacts>}
 
-            {selectedContact ? <Chatbox selectedContact={selectedContact} currentUser={currentUser}></Chatbox>
+            {selectedContact ? <Chatbox 
+            selectedContact={selectedContact} 
+            currentUser={currentUser} 
+            socket={socket}
+            ></Chatbox>
             : <Welcome currentUser={currentUser}></Welcome>}
             
         </div>

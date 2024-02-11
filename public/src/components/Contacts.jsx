@@ -36,7 +36,7 @@ const Contacts = ({contacts, currentUser, setSelectedContact}) => {
         <div className="current-user-placeholder">
             <img  src={`data:image/svg+xml;base64,${currentUser.avatarImage}`} alt="avatar"  width={40}/>
             <h2>{currentUser.username}</h2>
-            <button> LogOut</button>
+            {/* <button> LogOut</button> */}
         </div>
     </Container>
 
@@ -55,7 +55,7 @@ h1{
     color: white;
 }
 .brand{
-    background-color: red;
+    background-color: #d384ff;
     display: flex;
     flex-direction: row;
     gap: 1rem;
@@ -67,7 +67,7 @@ h1{
     width: 20%;
 }
 .contact-list{
-    background-color: #44ff00;
+    background-color: 	#4a0072;
     display: flex;
     flex-direction: column;
     overflow: auto;
@@ -88,7 +88,7 @@ h1{
     border-bottom: 2px solid black;
     flex-direction: row;
     gap: 1 rem;
-    background-color: yellowgreen;
+    background-color: #a400ff;
 }
 .contact-card h2{
     color: white;
@@ -103,7 +103,7 @@ h1{
 }
 
 .current-user-placeholder{
-    background-color: #0015ff;
+    background-color: rgba(211,132,255, 0.5);
     display: grid;
     padding: 5px;
     text-transform: capitalize;

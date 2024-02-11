@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 import {addMessage} from "../utils/APIRoutes"
 import axios from "axios"
 
-const ChatInput = ({selectedContact, currentUser}) => {
+const ChatInput = ({selectedContact, currentUser, setLatestMsg}) => {
     const [showPicker, setShowPicker] = useState(false)
     const inputRef = useRef()
     const [msg, setMsg] = useState("")
@@ -20,7 +20,18 @@ const ChatInput = ({selectedContact, currentUser}) => {
                 to: selectedContact._id,
                 message: inputRef.current.value
             })
-            
+            setLatestMsg({
+                fromSelf: true,
+                message: inputRef.current.value
+            })
+            // // emit socket event
+            // socket.current.emit("send-message", {
+            //     from: currentUser._id,
+            //     to: selectedContact._id,
+            //     message: inputRef.current.value
+            // })
+            // // add current message under chat window
+            // // setMsg(msgs => [...msgs, inputRef.current.value])
         }
         inputRef.current.value = ""      
     }
