@@ -6,3 +6,4 @@
 * 3rd party services used for random avatar generator.
 * Use multiple react hooks like useEffect, useRef, useNavigation, etc.
 * React Router DOM is responsible for routing the pages.
+* react notifications.
